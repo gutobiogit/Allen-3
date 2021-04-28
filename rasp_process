@@ -1,0 +1,38 @@
+#!/bin/bash
+
+declare -A dictionary
+
+if [ $# -gt 0 ]
+   then
+      while read line; do 
+      name=$(echo $line | cut -d " " -f1)
+      ip=$(echo $line | cut -d " " -f2)
+      dictionary[$name]="$ip"
+      names+=($name)
+      done < Rasp_Ip.txt
+      for i in "$@"
+         do
+            array+=($i)
+         done
+         load=${array[0]}
+         rasp_quant=$((${#array[@]}))
+         save=${array[-1]}
+	if [[ $1 = all ]]
+	   then
+	       for ((j=0;j<${#names[@]};j++))
+                  do
+                      ssh -p 22 -o StrictHostKeyChecking=no pi@${dictionary[${names[j]}]} ps --sort comm -A -o comm
+                  done
+         else
+	echo "${@:1:$rasp_quant+1}"
+             for l in "${@:1:$rasp_quant+1}"
+                do
+                    [ ${dictionary[$l]+abc} ] && ssh -p 22 -o StrictHostKeyChecking=no pi@${dictionary[$l]} ps --sort comm -A -o comm -o pid
+                done
+         fi
+else
+    clear
+    echo "ERROR!!! FOLLOW THE PATTERN"
+    echo ""
+    echo "./rasp_process rasp1 rasp2...all"
+fi

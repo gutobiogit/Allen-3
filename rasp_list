@@ -1,0 +1,6 @@
+#!/bin/bash
+
+cat Rasp_Ip.txt
+
+
+

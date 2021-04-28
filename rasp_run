@@ -1,0 +1,42 @@
+#!/bin/bash
+
+declare -A dictionary
+
+if [ $# -gt 1 ]
+   then
+      while read line; do 
+      name=$(echo $line | cut -d " " -f1)
+      ip=$(echo $line | cut -d " " -f2)
+      dictionary[$name]="$ip"
+      names+=($name)
+      done < Rasp_Ip.txt
+      for i in "$@"
+         do
+            array+=($i)
+         done
+         file=${array[0]}
+         rasp_quant=$((${#array[@]}))
+         pathwayway=${array[-1]}
+	if [[ $2 = all ]]
+	   then
+	       for ((j=0;j<${#names[@]};j++))
+                  do
+                     scp -rP 22 -o StrictHostKeyChecking=no pi@${dictionary[${names[j]}]} $pathwayway/.$file
+                  done
+         else
+             for l in "${@:1:$rasp_quant+1}"
+                do
+		    if [ $pathwayway = "/" ] 
+		       then
+		          [ ${dictionary[$l]+abc} ] &&  ssh -p 22 -o StrictHostKeyChecking=no pi@${dictionary[$l]} "./$file"
+		     else
+                          [ ${dictionary[$l]+abc} ] &&  ssh -p 22 -o StrictHostKeyChecking=no pi@${dictionary[$l]} "cd $pathwayway; ./$file"
+		    fi
+                done
+         fi
+else
+    clear
+    echo "ERROR!!! FOLLOW THE PATTERN"
+    echo ""
+    echo "./rasp_run <file to run> rasp1 rasp2...all <Path to file>"
+fi
